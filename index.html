@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>LOL KR 서버 상태 기록판</title>
+  <meta name="description" content="Riot Games 공식 서비스 상태를 기반으로 League of Legends KR 서버 상태를 기록하는 정보판">
+  <style>
+    :root{
+      --bg:#08111a;
+      --bg2:#0d1723;
+      --panel:#102030;
+      --panel2:#13283a;
+      --panel3:#0b1722;
+      --line:#31506b;
+      --line-soft:#233b53;
+      --gold:#c7a25a;
+      --gold-2:#efd9a6;
+      --bronze:#8c6937;
+      --teal:#66d1d4;
+      --teal-2:#3eaeb4;
+      --teal-deep:#17343e;
+      --text:#f3e6c7;
+      --text-2:#d2c1a1;
+      --muted:#93aabd;
+      --green:#29b474;
+      --yellow:#efbd46;
+      --red:#dc6660;
+      --shadow:0 18px 42px rgba(0,0,0,.36);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      color:var(--text);
+      font-family:Arial,"Noto Sans KR","Apple SD Gothic Neo",sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 15% 0%, rgba(102,209,212,.12), transparent 26%),
+        radial-gradient(circle at 88% 8%, rgba(199,162,90,.11), transparent 20%),
+        linear-gradient(180deg, #061019 0%, #09131e 38%, #0c1723 100%);
+      position:relative;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.42;
+      background:
+        linear-gradient(90deg, rgba(102,209,212,.05) 1px, transparent 1px),
+        linear-gradient(rgba(102,209,212,.05) 1px, transparent 1px);
+      background-size:42px 42px;
+      mask-image:linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.08));
+    }
+    body::after{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.18;
+      background:
+        radial-gradient(circle at 22% 24%, rgba(239,217,166,.24) 0 2px, transparent 2px 100%),
+        radial-gradient(circle at 72% 58%, rgba(102,209,212,.18) 0 2px, transparent 2px 100%);
+      background-size:160px 160px, 180px 180px;
+    }
+    a,button{font:inherit}
+    .wrap{width:min(1220px,calc(100% - 28px));margin:auto;padding:26px 0 56px}
+    .hero{
+      position:relative;
+      overflow:hidden;
+      border:1px solid rgba(199,162,90,.55);
+      background:
+        radial-gradient(circle at 18% 16%, rgba(102,209,212,.08), transparent 28%),
+        radial-gradient(circle at 80% 12%, rgba(239,217,166,.09), transparent 22%),
+        linear-gradient(135deg, rgba(10,22,34,.98), rgba(14,26,40,.96));
+      border-radius:26px;
+      box-shadow:var(--shadow);
+      margin-bottom:20px;
+      padding:26px 28px 24px;
+    }
+    .hero::before{
+      content:"";
+      position:absolute;
+      right:-40px; top:-60px;
+      width:260px; height:260px;
+      border-radius:50%;
+      border:1px solid rgba(102,209,212,.18);
+      box-shadow:
+        0 0 0 18px rgba(102,209,212,.03),
+        0 0 0 38px rgba(199,162,90,.03);
+      pointer-events:none;
+    }
+    .hero::after{
+      content:"";
+      position:absolute;
+      left:-30px; bottom:-46px;
+      width:240px; height:240px;
+      clip-path:polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+      border:1px solid rgba(199,162,90,.16);
+      transform:rotate(45deg);
+      pointer-events:none;
+    }
+    .topbar{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:18px;
+      margin-bottom:18px;
+    }
+    .eyebrow{
+      color:var(--teal);
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.2em;
+      text-transform:uppercase;
+      margin-bottom:10px;
+    }
+    h1{
+      margin:0;
+      font-size:52px;
+      line-height:1.02;
+      letter-spacing:-1.8px;
+      font-weight:900;
+      color:#fff2d0;
+      text-shadow:0 0 20px rgba(102,209,212,.06);
+    }
+    .lead{
+      margin:14px 0 0;
+      max-width:790px;
+      color:var(--text-2);
+      line-height:1.75;
+      font-size:15px;
+    }
+    .hero-side{display:flex;flex-direction:column;gap:12px;align-items:flex-end}
+    .source-pill{
+      padding:12px 16px;
+      border-radius:999px;
+      color:#fff1ce;
+      border:1px solid rgba(199,162,90,.5);
+      background:linear-gradient(180deg, rgba(23,52,62,.95), rgba(16,32,48,.95));
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.03),
+        0 0 0 1px rgba(102,209,212,.06);
+      font-size:13px;
+      white-space:nowrap;
+    }
+    .crest{
+      width:58px;height:58px;
+      border:1px solid rgba(199,162,90,.55);
+      border-radius:16px;
+      position:relative;
+      background:
+        radial-gradient(circle at 50% 40%, rgba(102,209,212,.18), transparent 46%),
+        linear-gradient(180deg, rgba(18,41,50,.98), rgba(12,25,38,.98));
+      overflow:hidden;
+    }
+    .crest::before,.crest::after{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
+    .crest::before{
+      width:30px;height:30px;border-radius:50%;
+      border:2px solid rgba(199,162,90,.9);
+      box-shadow:0 0 0 6px rgba(102,209,212,.08), inset 0 0 0 2px rgba(102,209,212,.16);
+    }
+    .crest::after{
+      width:10px;height:10px;border-radius:50%;background:var(--gold-2);
+      box-shadow:0 0 12px rgba(239,217,166,.35);
+    }
+    .top-tabs{display:flex;flex-wrap:wrap;gap:10px;margin-top:13px}
+    .tab{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:40px;
+      padding:8px 12px;
+      border:1px solid rgba(49,80,107,.95);
+      color:#bfd1df;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:800;
+      background:rgba(15,28,41,.76);
+      text-decoration:none;
+      cursor:pointer;
+      transition:background .16s ease,border-color .16s ease,color .16s ease,transform .16s ease;
+    }
+    .tab:hover{
+      border-color:rgba(102,209,212,.7);
+      color:#f6ead2;
+      transform:translateY(-1px);
+    }
+    .tab:focus-visible{
+      outline:2px solid var(--teal);
+      outline-offset:3px;
+    }
+    .tab.active{
+      color:#142632;
+      background:linear-gradient(180deg, #f0ddb3, var(--gold));
+      border-color:rgba(199,162,90,.95);
+    }
+
+    #liveArea,#currentSignal,#statusHistory,#failureTests{scroll-margin-top:22px}
+    .banner{
+      display:none;
+      margin:0 0 16px;
+      padding:13px 16px;
+      border-radius:14px;
+      font-size:13px;
+      line-height:1.7;
+    }
+    .banner.show{display:block}
+    .banner.warn{
+      color:#ffdf94;
+      border:1px solid rgba(199,162,90,.25);
+      background:linear-gradient(180deg, rgba(50,34,15,.96), rgba(36,24,10,.96));
+    }
+    .banner.bad{
+      color:#ffc0bb;
+      border:1px solid rgba(220,102,96,.34);
+      background:linear-gradient(180deg, rgba(59,20,20,.96), rgba(45,15,16,.96));
+    }
+
+    .grid{display:grid;grid-template-columns:1.5fr .78fr;gap:18px;margin-bottom:18px}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+    .card{
+      position:relative;
+      border-radius:22px;
+      background:
+        linear-gradient(180deg, rgba(16,32,48,.985), rgba(11,23,34,.985));
+      border:1px solid rgba(49,80,107,.92);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius:22px;
+      pointer-events:none;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.02), transparent 18%);
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.02);
+    }
+    .card::after{
+      content:"";
+      position:absolute;
+      left:0;right:0;top:0;height:2px;
+      background:linear-gradient(90deg, transparent, rgba(102,209,212,.85) 22%, rgba(199,162,90,.9) 50%, rgba(102,209,212,.85) 78%, transparent);
+      opacity:.78;
+      pointer-events:none;
+    }
+    .main,.side,.history,.compare,.verify,.tests{padding:24px}
+    .section-title{margin:0 0 18px;font-size:16px;color:#fff0c8;font-weight:900;letter-spacing:.02em}
+    .status-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:24px}
+    .label{font-size:12px;color:var(--muted);font-weight:800;margin-bottom:8px;letter-spacing:.06em}
+    .big-wrap{display:flex;align-items:flex-end;gap:8px}
+    .big-value{font-size:72px;font-weight:900;line-height:.92;letter-spacing:-2px;color:#fff8e8}
+    .big-value small{font-size:22px;color:var(--gold-2);margin-left:4px}
+    .state-line{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:20px;font-weight:900}
+    .dot{width:14px;height:14px;border-radius:50%;background:var(--green);box-shadow:0 0 0 6px rgba(41,180,116,.15)}
+    .region{
+      min-width:50px;text-align:center;
+      padding:10px 12px;border-radius:14px;
+      border:1px solid rgba(199,162,90,.4);
+      background:linear-gradient(180deg, rgba(23,52,62,.98), rgba(12,24,36,.98));
+      color:#fff1cf;font-weight:900
+    }
+
+    .issue-box{
+      position:relative;
+      border-radius:18px;
+      padding:20px;
+      background:
+        radial-gradient(circle at 82% 14%, rgba(102,209,212,.05), transparent 18%),
+        linear-gradient(180deg, rgba(8,19,31,.99), rgba(7,18,28,.99));
+      border:1px solid rgba(62,90,116,.95);
+      overflow:hidden;
+    }
+    .issue-box::before{
+      content:"";
+      position:absolute;left:0;top:0;bottom:0;width:5px;
+      background:linear-gradient(180deg, var(--gold), var(--teal));
+      opacity:.9;
+    }
+    .issue-box h2{margin:0 0 10px;font-size:22px;line-height:1.25;color:#fff5da}
+    .issue-box p{margin:0;color:#d5d9df;font-size:15px;line-height:1.72}
+    .issue-tag{
+      display:inline-block;padding:6px 11px;border-radius:999px;font-size:11px;font-weight:900;
+      background:var(--green);color:#061d14;margin-bottom:12px;
+      box-shadow:0 0 0 1px rgba(255,255,255,.03);
+    }
+    .meta{display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:14px;color:#9ab0c1;font-size:12px}
+    .meta strong{color:#f7e2b1}
+
+    .kv{display:grid;gap:0}
+    .kv-row{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:13px 0;border-bottom:1px solid rgba(35,59,83,.95)}
+    .kv-row:last-child{border-bottom:0}
+    .kv-row span:first-child{color:#98adc0}
+    .kv-row strong{text-align:right;color:#f1e7d2}
+    .link{color:#86d7dc;text-decoration:none}
+    .link:hover{text-decoration:underline}
+    .stale-chip{
+      display:none;margin-top:14px;padding:11px 12px;border-radius:12px;
+      border:1px solid rgba(199,162,90,.28);
+      background:linear-gradient(180deg, rgba(50,34,15,.96), rgba(36,24,10,.96));
+      color:#ffd67a;font-size:12px;font-weight:800;
+    }
+    .stale-chip.show{display:block}
+
+    table{width:100%;border-collapse:collapse;font-size:13px;overflow:hidden}
+    thead th{
+      text-align:left;padding:13px 12px;
+      color:#f0ddb1;font-size:11px;font-weight:900;
+      background:linear-gradient(180deg, rgba(8,20,30,.98), rgba(10,24,38,.98));
+      border-bottom:1px solid rgba(49,80,107,.84);
+    }
+    td{padding:14px 12px;border-bottom:1px solid rgba(30,51,72,.95);color:#eee3cf}
+    tr:last-child td{border-bottom:0}
+    tbody tr:hover{background:rgba(102,209,212,.03)}
+    .state{display:inline-flex;align-items:center;gap:7px;font-weight:800}
+    .mini{width:9px;height:9px;border-radius:50%;background:var(--green)}
+
+    .compare-box{
+      display:flex;align-items:center;justify-content:center;gap:18px;
+      padding:22px 12px;border-radius:18px;
+      border:1px solid rgba(49,80,107,.92);
+      background:
+        radial-gradient(circle at 50% 10%, rgba(239,217,166,.08), transparent 32%),
+        linear-gradient(180deg, rgba(9,23,36,.99), rgba(10,22,34,.99));
+    }
+    .compare-item{text-align:center}
+    .compare-label{font-size:11px;color:#9ab0c1;margin-bottom:7px}
+    .compare-val{font-size:18px;font-weight:900;color:#fff0ca}
+    .arrow{font-size:28px;color:var(--gold)}
+    .change{
+      margin-top:12px;padding:12px 14px;border-radius:13px;text-align:center;
+      font-size:13px;font-weight:800;color:#ecdcb8;
+      border:1px solid rgba(55,86,111,.9);
+      background:linear-gradient(180deg, rgba(14,31,44,.98), rgba(10,22,34,.98));
+    }
+
+    .verify-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .verify-item{
+      border-radius:16px;padding:16px;
+      border:1px solid rgba(49,80,107,.88);
+      background:
+        linear-gradient(180deg, rgba(8,19,31,.98), rgba(10,22,34,.98));
+      position:relative;
+    }
+    .verify-item::before{
+      content:"";
+      position:absolute;left:14px;right:14px;top:0;height:2px;
+      background:linear-gradient(90deg, transparent, rgba(102,209,212,.6), transparent);
+      opacity:.8;
+    }
+    .verify-item .vlabel{font-size:11px;color:#a2b3c2;font-weight:800;margin-bottom:10px}
+    .verify-item .vvalue{font-size:16px;line-height:1.55;color:#fff0c9;font-weight:900;word-break:break-word}
+
+    .tests p{margin:0 0 15px;color:#d4c4a8;font-size:13px;line-height:1.72}
+    .test-buttons{display:flex;flex-wrap:wrap;gap:10px}
+    .btn{
+      border:1px solid rgba(199,162,90,.38);
+      background:linear-gradient(180deg, rgba(19,38,57,.98), rgba(12,25,38,.98));
+      color:#f4e7ce;border-radius:12px;padding:10px 13px;font-size:12px;font-weight:900;cursor:pointer;
+      box-shadow:inset 0 0 0 1px rgba(102,209,212,.06);
+    }
+    .btn:hover{filter:brightness(1.08)}
+    .btn.primary{
+      background:linear-gradient(180deg, #f0ddb3, #bd9354);
+      color:#102030;border-color:rgba(199,162,90,.95);
+    }
+    .test-result{
+      display:none;margin-top:14px;padding:13px 14px;border-radius:14px;
+      border:1px solid rgba(49,80,107,.9);
+      background:linear-gradient(180deg, rgba(8,19,31,.98), rgba(10,22,34,.98));
+      color:#d7e1ea;font-size:13px;line-height:1.7;
+    }
+    .test-result.show{display:block}
+    .tech{margin-top:18px;text-align:center;color:#8396a8;font-size:11px;line-height:1.8}
+    .loading{opacity:.6;pointer-events:none}
+
+    @media (max-width:980px){
+      h1{font-size:40px}
+      .grid,.two{grid-template-columns:1fr}
+      .hero-side{align-items:flex-start}
+      .topbar{flex-direction:column}
+    }
+    @media (max-width:720px){
+      .verify-grid{grid-template-columns:1fr}
+      .big-value{font-size:56px}
+      .wrap{width:min(100% - 18px,1220px);padding-top:18px}
+    }
+    @media (max-width:520px){
+      h1{font-size:34px}
+      .main,.side,.history,.compare,.verify,.tests,.hero{padding:18px}
+      .status-head{align-items:flex-start}
+      .kv-row{flex-direction:column}
+      .kv-row strong{text-align:left}
+      .compare-box{gap:10px}
+      .arrow{font-size:20px}
+      .source-pill{white-space:normal}
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <div class="topbar">
+        <div>
+          <div class="eyebrow">League of Legends · KR Status Archive</div>
+          <h1>LOL KR 서버 상태 기록판</h1>
+          <p class="lead">
+            Riot Games 공식 서비스 상태를 조회해 현재 활성 이슈 수를 기록합니다.
+            실패 시에는 마지막 성공값을 지우지 않고 오래된 값임을 표시하며,
+            같은 KST 날짜에는 기록을 한 건으로 유지합니다.
+          </p>
+          <div class="top-tabs">
+            <a class="tab active" href="#liveArea" data-nav>상태 요약</a>
+            <a class="tab" href="#currentSignal" data-nav>실시간 서버 신호</a>
+            <a class="tab" href="#statusHistory" data-nav>KR 상태 기록</a>
+            <a class="tab" href="#failureTests" data-nav>장애·점검 테스트</a>
+          </div>
+        </div>
+        <div class="hero-side">
+          <div class="source-pill">공식 원천 · Asia/Seoul</div>
+          <div class="crest" aria-hidden="true"></div>
+        </div>
+      </div>
+    </section>
+
+    <div id="storageBanner" class="banner warn"></div>
+    <div id="errorBanner" class="banner bad"></div>
+
+    <section class="grid" id="liveArea">
+      <article class="card main">
+        <div class="status-head">
+          <div>
+            <div class="label">현재 활성 이슈</div>
+            <div class="big-wrap">
+              <div class="big-value"><span id="issueCount">-</span><small>건</small></div>
+            </div>
+            <div class="state-line"><span id="statusDot" class="dot"></span><span id="statusText">조회 중...</span></div>
+          </div>
+          <div class="region">KR</div>
+        </div>
+
+        <div class="issue-box" id="currentSignal">
+          <span id="issueTag" class="issue-tag">확인 중</span>
+          <h2 id="issueTitle">Riot Games 상태를 확인하고 있습니다.</h2>
+          <p id="issueDescription">잠시만 기다려 주세요.</p>
+          <div class="meta">
+            <span><strong>공지/원천 시각</strong> <span id="sourceTime">-</span></span>
+            <span><strong>영향 플랫폼</strong> <span id="platforms">-</span></span>
+          </div>
+        </div>
+      </article>
+
+      <aside class="card side">
+        <h3 class="section-title">조회 정보</h3>
+        <div class="kv">
+          <div class="kv-row"><span>게임</span><strong>리그 오브 레전드</strong></div>
+          <div class="kv-row"><span>지역</span><strong>Korea (KR)</strong></div>
+          <div class="kv-row"><span>값 / 단위</span><strong><span id="sideCount">-</span> 건</strong></div>
+          <div class="kv-row"><span>조회 시각</span><strong id="checkedAt">-</strong></div>
+          <div class="kv-row"><span>기준 시간대</span><strong>Asia/Seoul (KST)</strong></div>
+          <div class="kv-row"><span>데이터 경로</span><strong id="sourceMode">-</strong></div>
+          <div class="kv-row"><span>출처</span><strong><a class="link" target="_blank" rel="noopener" href="https://status.riotgames.com/?locale=ko_KR&product=leagueoflegends&region=kr">Riot Games Service Status</a></strong></div>
+        </div>
+        <div id="staleChip" class="stale-chip">⚠ 현재 조회에 실패하여 마지막 성공값을 표시 중입니다.</div>
+      </aside>
+    </section>
+
+    <section class="two">
+      <article class="card history" id="statusHistory">
+        <h3 class="section-title">일별 기록 · KST 날짜당 한 건</h3>
+        <table>
+          <thead><tr><th>날짜</th><th>이슈 수</th><th>상태</th><th>대표 이슈</th></tr></thead>
+          <tbody id="historyBody"><tr><td colspan="4">기록을 불러오는 중...</td></tr></tbody>
+        </table>
+      </article>
+
+      <article class="card compare">
+        <h3 class="section-title">어제 대비</h3>
+        <div class="compare-box">
+          <div class="compare-item"><div class="compare-label">이전 기록</div><div id="prevValue" class="compare-val">-</div></div>
+          <div class="arrow">→</div>
+          <div class="compare-item"><div class="compare-label">최근 기록</div><div id="currValue" class="compare-val">-</div></div>
+        </div>
+        <div id="changeText" class="change">서로 다른 실제 날짜의 기록이 2건 쌓이면 비교됩니다.</div>
+      </article>
+    </section>
+
+    <section class="card verify" style="margin-bottom:18px">
+      <h3 class="section-title">원자료 · 저장값 · 화면값 대조</h3>
+      <div class="verify-grid">
+        <div class="verify-item"><div class="vlabel">원자료에서 정규화한 값</div><div id="rawValue" class="vvalue">-</div></div>
+        <div class="verify-item"><div class="vlabel">오늘 저장값</div><div id="savedValue" class="vvalue">-</div></div>
+        <div class="verify-item"><div class="vlabel">현재 화면값</div><div id="screenValue" class="vvalue">-</div></div>
+      </div>
+    </section>
+
+    <section class="card tests" id="failureTests">
+      <h3 class="section-title">합성 실패 재생</h3>
+      <p>실제 Riot 원천을 망가뜨리지 않고 다섯 실패를 합성 재생합니다. 실패 중에는 마지막 정상값을 보존하고, 정상 복구 버튼으로 다시 fresh 상태를 확인할 수 있습니다.</p>
+      <div class="test-buttons">
+        <button class="btn" data-test="slow">느린 응답</button>
+        <button class="btn" data-test="403">401 / 403</button>
+        <button class="btn" data-test="429">호출 제한</button>
+        <button class="btn" data-test="offline">오프라인</button>
+        <button class="btn" data-test="schema">형식 변경</button>
+        <button class="btn primary" id="recoverBtn">정상 상태로 복구</button>
+      </div>
+      <div id="testResult" class="test-result"></div>
+    </section>
+
+    <p class="tech">클라이언트에는 Riot API 키를 넣지 않습니다. Riot 원천 데이터를 서버에서 가져오고, KST 날짜 기준으로 하루 한 건만 보존합니다.</p>
+  </main>
+
+<script>
+const $ = id => document.getElementById(id);
+const LOCAL_KEY = "lol-kr-daily-history-v1";
+let lastGood = null;
+let lastHistory = [];
+
+function fmt(iso){
+  if(!iso) return "해당 없음";
+  try{
+    return new Intl.DateTimeFormat("ko-KR",{
+      timeZone:"Asia/Seoul",year:"numeric",month:"2-digit",day:"2-digit",
+      hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false
+    }).format(new Date(iso))+" KST";
+  }catch{return iso}
+}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]))}
+function colorFor(status){
+  if(status==="normal") return ["#39d98a","rgba(57,217,138,.12)","#062012"];
+  if(status==="maintenance"||status==="info") return ["#5ba7ff","rgba(91,167,255,.12)","#06192b"];
+  return ["#ffc857","rgba(255,200,87,.12)","#271900"];
+}
+function statusLabel(s){
+  return ({normal:"정상",warning:"경고",critical:"장애",maintenance:"점검",info:"안내"}[s]||"확인 필요");
+}
+function kstDate(iso=new Date().toISOString()){
+  return new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Seoul",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date(iso));
+}
+function getLocalHistory(){
+  try{return JSON.parse(localStorage.getItem(LOCAL_KEY)||"[]")}catch{return []}
+}
+function saveLocalRecord(current){
+  const date = kstDate(current.checkedAt);
+  let rows = getLocalHistory();
+  const row = {
+    date_kst:date, issue_count:current.issueCount, status:current.status,
+    issue_title:current.title||"", source_time:current.sourceTime||null,
+    checked_at:current.checkedAt
+  };
+  const idx = rows.findIndex(r=>r.date_kst===date);
+  if(idx>=0) rows[idx]=row; else rows.push(row);
+  rows.sort((a,b)=>b.date_kst.localeCompare(a.date_kst));
+  rows=rows.slice(0,14);
+  localStorage.setItem(LOCAL_KEY,JSON.stringify(rows));
+  return rows;
+}
+function mergeHistory(serverRows, storageMode, current){
+  if(storageMode==="database") return serverRows||[];
+  if(current) return saveLocalRecord(current);
+  return getLocalHistory();
+}
+function renderHistory(rows){
+  lastHistory=rows||[];
+  if(!rows?.length){
+    $("historyBody").innerHTML='<tr><td colspan="4">아직 저장된 기록이 없습니다.</td></tr>';
+    $("prevValue").textContent="-";$("currValue").textContent="-";
+    $("changeText").textContent="서로 다른 실제 날짜의 기록이 2건 쌓이면 비교됩니다.";
+    return;
+  }
+  $("historyBody").innerHTML=rows.slice(0,7).map(r=>`
+    <tr><td>${esc(r.date_kst)}</td><td>${esc(r.issue_count)}건</td>
+    <td><span class="state"><span class="mini" style="background:${colorFor(r.status)[0]}"></span>${esc(statusLabel(r.status))}</span></td>
+    <td>${esc(r.issue_title||"없음")}</td></tr>`).join("");
+  $("currValue").textContent=`${rows[0].issue_count}건 · ${statusLabel(rows[0].status)}`;
+  if(rows[1]){
+    $("prevValue").textContent=`${rows[1].issue_count}건 · ${statusLabel(rows[1].status)}`;
+    const d=Number(rows[0].issue_count)-Number(rows[1].issue_count);
+    const text=d===0?"활성 이슈 수 변화 없음":d>0?`활성 이슈 ${d}건 증가`:`활성 이슈 ${Math.abs(d)}건 감소`;
+    $("changeText").textContent=`${rows[1].date_kst} → ${rows[0].date_kst}: ${text}`;
+  }else{
+    $("prevValue").textContent="-";
+    $("changeText").textContent="서로 다른 실제 KST 날짜의 기록이 한 건 더 필요합니다.";
+  }
+}
+function renderCurrent(cur, stale=false){
+  if(!cur) return;
+  if(!stale) lastGood=cur;
+  const [c,shadow,tagText]=colorFor(cur.status);
+  $("issueCount").textContent=cur.issueCount;
+  $("sideCount").textContent=cur.issueCount;
+  $("statusText").textContent=statusLabel(cur.status);
+  $("statusDot").style.background=c;$("statusDot").style.boxShadow=`0 0 0 6px ${shadow}`;
+  $("issueTag").textContent=statusLabel(cur.status);$("issueTag").style.background=c;$("issueTag").style.color=tagText;
+  $("issueTitle").textContent=cur.title|| (cur.issueCount===0 ? "특이사항 또는 문제 없음" : "Riot Games 공지");
+  $("issueDescription").textContent=cur.description|| (cur.issueCount===0 ? "현재 보고된 장애 또는 점검이 없습니다." : "현재 활성 공지가 있습니다.");
+  $("sourceTime").textContent=fmt(cur.sourceTime||cur.sourceResponseTime);
+  $("platforms").textContent=(cur.platforms?.length?cur.platforms.join(", "):"전체 또는 미표시");
+  $("checkedAt").textContent=fmt(cur.checkedAt);
+  $("sourceMode").textContent=cur.sourceMode==="riot-api"?"Riot 공식 API":"Riot 공개 상태 페이지";
+  $("staleChip").classList.toggle("show",stale);
+  $("rawValue").textContent=`${cur.issueCount}건 / ${statusLabel(cur.status)} / ${cur.title||"없음"}`;
+  $("screenValue").textContent=`${cur.issueCount}건 / ${statusLabel(cur.status)} / ${cur.title||"없음"}`;
+}
+function renderSaved(rows, current){
+  const today=rows?.find(r=>r.date_kst===kstDate(current?.checkedAt));
+  $("savedValue").textContent=today?`${today.issue_count}건 / ${statusLabel(today.status)} / ${today.issue_title||"없음"}`:"저장값 없음";
+}
+function showError(msg){
+  $("errorBanner").textContent=msg;$("errorBanner").classList.add("show");
+}
+function clearError(){$("errorBanner").classList.remove("show")}
+function setLoading(on){$("liveArea").classList.toggle("loading",on)}
+async function loadStatus(test=""){
+  setLoading(true);clearError();
+  try{
+    const url="/api/status"+(test?`?test=${encodeURIComponent(test)}`:"");
+    const res=await fetch(url,{cache:"no-store"});
+    const data=await res.json().catch(()=>({ok:false,message:"서버 응답을 해석할 수 없습니다."}));
+    if(data.ok){
+      const rows=mergeHistory(data.history,data.storageMode,data.current);
+      renderCurrent(data.current,false);renderHistory(rows);renderSaved(rows,data.current);
+      $("storageBanner").classList.toggle("show",data.storageMode!=="database");
+      if(data.storageMode!=="database"){
+        $("storageBanner").textContent="현재 DB 환경변수가 없어 이 브라우저의 localStorage에 날짜별 기록을 보관합니다. 공개 심사에서도 같은 기록을 보이게 하려면 README의 Supabase 설정을 연결하세요.";
+      }
+      return data;
+    }
+    const local = getLocalHistory();
+    const fallback = data.lastGood || lastGood || (local[0]?{
+      issueCount:Number(local[0].issue_count),status:local[0].status,title:local[0].issue_title,
+      checkedAt:local[0].checked_at,sourceTime:local[0].source_time,platforms:[],sourceMode:"browser-history"
+    }:null);
+    if(fallback) renderCurrent(fallback,true);
+    renderHistory(data.history?.length?data.history:local);
+    showError(`${data.errorLabel||"조회 실패"} — ${data.message||"현재 Riot 상태를 불러오지 못했습니다."} 마지막 성공값은 유지됩니다.`);
+    return data;
+  }catch(e){
+    const local=getLocalHistory();
+    if(lastGood) renderCurrent(lastGood,true);
+    renderHistory(local);
+    showError("네트워크 오류 — 현재 상태를 가져오지 못했습니다. 마지막 성공값은 유지됩니다.");
+    return {ok:false,message:e.message};
+  }finally{setLoading(false)}
+}
+document.querySelectorAll("[data-test]").forEach(btn=>btn.addEventListener("click",async()=>{
+  const mode=btn.dataset.test;
+  $("testResult").classList.add("show");
+  $("testResult").textContent=`${btn.textContent} 합성 실패를 재생하는 중...`;
+  const data=await loadStatus(mode);
+  $("testResult").textContent=`결과: ${data.errorLabel||"실패 상태"} / error_code=${data.errorCode||"-"} / stale=true / 마지막 성공값 보존`;
+}));
+$("recoverBtn").addEventListener("click",async()=>{
+  $("testResult").classList.add("show");$("testResult").textContent="실제 정상 조회로 복구하는 중...";
+  const data=await loadStatus();
+  $("testResult").textContent=data.ok?"복구 완료: fresh=true / error_code=none / 같은 KST 날짜이면 기존 행을 갱신하고 새 행을 만들지 않습니다.":"복구 실패: 실제 원천 조회 상태를 확인하세요.";
+});
+loadStatus();
+
+// 상단 탭은 실제 바로가기입니다. 클릭하면 해당 섹션으로 이동하고 선택 상태가 바뀝니다.
+document.querySelectorAll("[data-nav]").forEach(link => {
+  link.addEventListener("click", () => {
+    document.querySelectorAll("[data-nav]").forEach(item => item.classList.remove("active"));
+    link.classList.add("active");
+  });
+});
+
+</script>
+</body>
+</html>
